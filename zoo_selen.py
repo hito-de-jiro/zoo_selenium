@@ -4,7 +4,6 @@ import requests
 import time
 import csv
 
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -17,17 +16,17 @@ URL = 'https://www.zooplus.de/tierarzt/results'
 
 
 def get_html(url=URL):
-
     # options = webdriver.ChromeOptions()
     # ua = UserAgent()
     # options.add_argument(ua.google)
     # options.add_argument("--disable-notifications")
-    #options.add_argument('headless')  # запуск браузера у фоні
+    # options.add_argument('headless')  # запуск браузера у фоні
     # browser = webdriver.Chrome(chrome_options=options)
 
     # start browser without options
     browser = webdriver.Chrome()
 
+    # Dict with headers
     headers = {
 
         'accept': 'application/json',
@@ -49,43 +48,57 @@ def get_html(url=URL):
     try:
         browser.get(url)
         # Operation with cookies
-        WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[3]/div/div/div[2]/div/div/button[2]"))).click()
+        WebDriverWait(browser, 20).until(
+            EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[3]/div/div/div[2]/div/div/button[2]"))).click()
         time.sleep(5)
         WebDriverWait(browser, 20).until(
-            EC.element_to_be_clickable((By.XPATH, "/html/body/div[1]/div/div/main/div/div[3]/div[1]/section/div[1]/fieldset/div/div[1]/div[1]/label/input"))).click()
-        time.sleep(5)
-
+            EC.element_to_be_clickable((By.XPATH,
+                                        "/html/body/div[1]/div/div/main/div/div[3]/div[1]/section/div[1]/fieldset/div/div[1]/div[1]/label/input"))).click()
+        time.sleep(3)
+        # get element with all data
         elems = browser.find_elements(By.CLASS_NAME, 'result-intro ')
-        get_data = []
+        # make dictionary  for list get_data
+        all_data = {}
+        # get value from list of elems
         for elem in elems:
+            # make empty list and record data elements
+            get_data = []
+            title = elem.find_element(By.CLASS_NAME, 'result-intro__title')
+            get_data.append(title.text)
+            rating = elem.find_element(By.CLASS_NAME, 'result-intro__rating__note')
+            get_data.append(rating.text)
             try:
-                title = elem.find_element(By.CLASS_NAME, 'result-intro__title')
-                print(title.text)
-                rating = elem.find_element(By.CLASS_NAME, 'result-intro__rating__note')
-                print(rating.text)
                 description = elem.find_element(By.CLASS_NAME, 'result-intro__subtitle')
-                print(description.text)
-                working_time = elem.find_element(By.CLASS_NAME, 'daily-hours__range')
-                print(working_time.text)
-                working_time_note = elem.find_element(By.CLASS_NAME, 'daily-hours')
-                print(working_time_note.text)
-                address = elem.find_element(By.CLASS_NAME, 'result-intro__address')
-                print(address.text)
+                get_data.append(description.text)
             except Exception:
-                continue
+                description = ''
+                get_data.append(description)
 
+            try:
+                working_time = elem.find_element(By.CLASS_NAME, 'daily-hours__range')
+                get_data.append(working_time.text)
+            except Exception:
+                working_time = ''
+                get_data.append(working_time)
 
-# TODO: Make data structuring
-# TODO: Make record and save data to CSV
+            try:
+                working_time_note = elem.find_element(By.CLASS_NAME, 'daily-hours__note text-primary')
+                get_data.append(working_time_note.text)
+            except LookupError:  # ???
+                working_time_note = ''
+                get_data.append(working_time_note)
 
+            address = elem.find_element(By.CLASS_NAME, 'result-intro__address')
+            get_data.append(address.text)
+            print(get_data)
+            # record list 'get_data' in dict 'all_data'
+            all_data[title.text] = get_data
 
-
-            # output_file = open('output_data.csv', 'w', newline='')
-            # output_writer = csv.writer(output_file)
-            # output_writer.writerow(elem_text)
-            # output_file.close()
-
-        #print(get_data)
+            # TODO: create and record CSV-file
+            csv_file = open('output_data.csv', 'w', newline='', encoding='utf-8')
+            csv_writer = csv.writer(csv_file, delimiter=',', lineterminator='\n\n')
+            csv_writer.writerow(get_data)
+            csv_file.close()
 
     except Exception as ex:
         print(ex)
