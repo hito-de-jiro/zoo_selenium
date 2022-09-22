@@ -65,7 +65,6 @@ def get_html(url=URL):
                 print(rating.text)
                 description = elem.find_element(By.CLASS_NAME, 'result-intro__subtitle')
                 print(description.text)
-
                 working_time = elem.find_element(By.CLASS_NAME, 'daily-hours__range')
                 print(working_time.text)
                 working_time_note = elem.find_element(By.CLASS_NAME, 'daily-hours')
@@ -74,6 +73,11 @@ def get_html(url=URL):
                 print(address.text)
             except Exception:
                 continue
+
+
+# TODO: Make data structuring
+# TODO: Make record and save data to CSV
+
 
 
             # output_file = open('output_data.csv', 'w', newline='')
