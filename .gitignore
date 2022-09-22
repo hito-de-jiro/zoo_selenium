@@ -10,6 +10,10 @@ __pycache__/
 # PyCarm files
 .idea/
 
+# Files of Project
+chromedriver.exe
+*.ipynb
+
 # Distribution / packaging
 .Python
 build/
