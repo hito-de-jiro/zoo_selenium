@@ -11,6 +11,7 @@ __pycache__/
 .idea/
 
 # Files of Project
+.venv
 chromedriver.exe
 *.ipynb
 output_data.csv

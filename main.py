@@ -6,8 +6,7 @@ from bs4 import BeautifulSoup
 HOST = 'https://www.zooplus.de'
 URL = 'https://www.zooplus.de/tierarzt/results?animal_99=true'
 HEADERS = {
-    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-    'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjM3NjExMzQsImlhdCI6MTY2Mzc2MDIzNH0.U3yg-bQvSX_gQmbNy_AhqM6fRFj7qGCEbdw8GMSSGxI',
+    'accept': '*/*',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
 }
 COOKIES = {
