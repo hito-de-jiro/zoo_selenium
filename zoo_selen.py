@@ -7,7 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
 HOST = 'https://www.zooplus.de'
-url = 'https://www.zooplus.de/tierarzt/results?animal_99=true&page=1'
+num_page = 1
+url = f'https://www.zooplus.de/tierarzt/results?animal_99=true&page={str(num_page)}'
 
 
 def get_html(url=url):
@@ -15,19 +16,14 @@ def get_html(url=url):
     browser = webdriver.Chrome()
     # make dictionary  for list get_data
     all_data = []
+
     try:
         browser.get(url)
-        # Operation with cookies
+        # Operation with window cookies
         WebDriverWait(browser, 20).until(
-            ec.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[3]/div/div/div[2]/div/div/button[2]"))).click()
+            ec.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))).click()
         time.sleep(1)
-        WebDriverWait(browser, 20).until(
-            ec.element_to_be_clickable((By.XPATH,
-                                        "/html/body/div[1]/div/div/main/div/div[3]/div[1]/section/div[1]/fieldset/div/div[1]/div[1]/label/input"))).click()
-        time.sleep(1)
-        # get element with all data
         elems = browser.find_elements(By.CLASS_NAME, 'result-intro ')
-
         # get value from list of elems
         for elem in elems:
             # make empty list and record data elements
@@ -40,19 +36,19 @@ def get_html(url=url):
             try:
                 description = elem.find_element(By.CLASS_NAME, 'result-intro__subtitle')
                 get_data.append(description.text)
-            except IndexError:
+            except Exception:
                 get_data.append(empty_string)
 
             try:
                 working_time = elem.find_element(By.CLASS_NAME, 'daily-hours__range')
                 get_data.append(working_time.text)
-            except IndexError:
+            except Exception:
                 get_data.append(empty_string)
 
             try:
                 working_time_note = elem.find_element(By.CLASS_NAME, 'daily-hours__note').text
-                get_data.append(working_time_note)
-            except IndexError:
+                get_data.append(working_time_note.text)
+            except Exception:
                 get_data.append(empty_string)
 
             address_text = elem.find_element(By.CLASS_NAME, 'result-intro__address').text
@@ -66,7 +62,7 @@ def get_html(url=url):
         print(ex)
     finally:
         print('Done!')
-        time.sleep(10)
+        time.sleep(5)
         browser.close()
         browser.quit()
 
