@@ -1,16 +1,12 @@
 import time
-import csv
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as ec
-
 
 URL = f'https://www.zooplus.de/tierarzt/results?animal_99=true'
 
 num_page = 1
-browser = webdriver.Chrome()
+browser = webdriver.Firefox()
 browser.implicitly_wait(10)
 
 try:
@@ -27,4 +23,3 @@ finally:
     time.sleep(10)
     browser.close()
     browser.quit()
-

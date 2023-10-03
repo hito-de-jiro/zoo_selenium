@@ -1,5 +1,5 @@
 import csv
-import time
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -16,7 +16,7 @@ def get_html(url=URL):
     all_data = []
     num_page = 2
     i = 1
-    browser = webdriver.Chrome()
+    browser = webdriver.Firefox()
     browser.implicitly_wait(10)
     while i < num_page + 1:
         browser.get(url + '&page=' + str(i))
