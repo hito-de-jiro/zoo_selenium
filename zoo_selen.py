@@ -1,30 +1,33 @@
-import time
 import csv
-
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
 
 HOST = 'https://www.zooplus.de'
-num_page = 1
-url = f'https://www.zooplus.de/tierarzt/results?animal_99=true&page={str(num_page)}'
+
+URL = f'https://www.zooplus.de/tierarzt/results?animal_99=true'
 
 
-def get_html(url=url):
-    # start browser without options
-    browser = webdriver.Chrome()
-    # make dictionary  for list get_data
+def get_html(url=URL):
+    """Starts the browser, receives and returns raw data"""
+    # Creating a list to collect raw data
     all_data = []
+    num_page = 2
+    i = 1
+    browser = webdriver.Chrome()
+    browser.implicitly_wait(10)
+    while i < num_page + 1:
+        browser.get(url + '&page=' + str(i))
+        try:
+            WebDriverWait(browser, 10).until(ec.element_to_be_clickable(
+                (By.XPATH, "/html/body/div[2]/div[3]/div/div/div[2]/div/div/button[2]"))).click()
+        except Exception:
+            continue
 
-    try:
-        browser.get(url)
-        # Operation with window cookies
-        WebDriverWait(browser, 20).until(
-            ec.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))).click()
-        time.sleep(1)
         elems = browser.find_elements(By.CLASS_NAME, 'result-intro ')
-        # get value from list of elems
+        #  get value from list of elems
         for elem in elems:
             # make empty list and record data elements
             get_data = []
@@ -47,7 +50,7 @@ def get_html(url=url):
 
             try:
                 working_time_note = elem.find_element(By.CLASS_NAME, 'daily-hours__note').text
-                get_data.append(working_time_note.text)
+                get_data.append(working_time_note)
             except Exception:
                 get_data.append(empty_string)
 
@@ -58,14 +61,13 @@ def get_html(url=url):
             # record list 'get_data' in dict 'all_data'
             all_data.append(get_data)
 
-    except Exception as ex:
-        print(ex)
-    finally:
-        print('Done!')
-        time.sleep(5)
-        browser.close()
-        browser.quit()
+        i += 1
 
+    print('Done!')
+
+    # time.sleep(2)
+    browser.close()
+    browser.quit()
     return all_data
 
 
@@ -77,11 +79,11 @@ def save_csv(data):
     csv_file.close()
 
 
-def main():
-    data = get_html(url)
-    save_csv(data)
+def main(url=URL):
+    get_html(url)
+    # data = get_html(url)
+    # save_csv(data)
 
 
 if __name__ == '__main__':
     main()
-
